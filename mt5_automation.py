@@ -59,9 +59,7 @@ def execute_trade(symbol, predicted_price, lot_size=0.1):
             print(f"symbol_select({symbol}) failed, exit")
             return None
 
-    point = mt5.symbol_info(symbol).point
     price = mt5.symbol_info_tick(symbol).ask
-    digits = mt5.symbol_info(symbol).digits
 
     # Determining order type
     if predicted_price > price:
@@ -84,8 +82,6 @@ def execute_trade(symbol, predicted_price, lot_size=0.1):
         "type_time": mt5.ORDER_TIME_GTC,
         "type_filling": mt5.ORDER_FILLING_IOC
     }
-
-    print(f"Sending order: {request}")  # Debugging information
 
     result = mt5.order_send(request)
     if result is None:
@@ -136,11 +132,9 @@ def manage_trade_closure(symbol, trade_result, predicted_price, interval_end_tim
     # Setting the TP at the 5-minute mark
     position = mt5.positions_get(ticket=trade_result.order)
     if not position:
-        print("Trade already closed before 10-minute mark")
         return
 
     position = position[0]
-    print(position)
 
     point = mt5.symbol_info(symbol).point
     current_price = mt5.symbol_info_tick(symbol).ask if position.type == 0 else mt5.symbol_info_tick(symbol).bid
@@ -159,13 +153,12 @@ def manage_trade_closure(symbol, trade_result, predicted_price, interval_end_tim
         "position": position.ticket,
         "tp": tp_round + 100 * point,
     }
-    print(f"Modifying order: {request}")  # Debugging information
 
     max_attempts = 10
     for attempt in range(max_attempts):
         result = mt5.order_send(request)
         if result and result.retcode == mt5.TRADE_RETCODE_DONE:
-            print(f"TP set to {tp_round} at 5-minute mark")
+            print(f"TP set to {tp_round}")
             break
         else:
             print(f"Failed to set TP, attempt {attempt + 1}/{max_attempts}")
@@ -200,9 +193,7 @@ def manage_trade_closure(symbol, trade_result, predicted_price, interval_end_tim
             "type_time": mt5.ORDER_TIME_GTC,
             "type_filling": mt5.ORDER_FILLING_IOC,
         }
-
-        print(f"Closing request order: {close_request}")  # Debugging information
-        
+      
         for attempt in range(max_attempts):
             result = mt5.order_send(close_request)
             if result and result.retcode == mt5.TRADE_RETCODE_DONE:
@@ -251,7 +242,7 @@ def main():
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     try:
-        model = models.load_model('./saved_model/model_v2.keras')
+        model = models.load_model('./saved_model/model_v3.keras')
     except Exception as e:
         print(f"Failed to load the model: {e}")
         return
