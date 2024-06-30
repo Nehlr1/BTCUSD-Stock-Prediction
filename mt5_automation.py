@@ -11,8 +11,8 @@ import threading
 
 # Creating a dictionary for storing all the credentials for MT5
 credentials = {
-    "login": 51840772,
-    "password": "@Hb$KDlLZ8CvJe",
+    "login": "ACCOUNT_ID",
+    "password": "PASSWORD",
     "server": "ICMarketsSC-Demo",
     "path": "C:/Program Files/MetaTrader 5/terminal64.exe",
     "timeout": 60000,
@@ -237,8 +237,8 @@ def send_telegram_message(token, chat_id, message):
         print(f"An error occurred while sending the message: {e}")
 
 def main():
-    token = "7197176251:AAEOKZHm0iQwJ3aqNowWtuoZD1w7AqU2D3k"
-    chat_id = "-1002106353670"
+    token = "BOT_TOKEN"
+    chat_id = "CHAT_ID"
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     try:
